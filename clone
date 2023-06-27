@@ -26,24 +26,23 @@ if [[ $1 =~ $regex ]]; then
     # If the clone was successful, then print a success message
     if [ $? -eq 0 ]; then
         echo "Cloned $url"
-
-        # Check if JQ is installed
-
-        if ! command -v jq &> /dev/null
-        then
-            echo "If you install jq, then the repo will be added to the list of repos in the VSCode's project manager extension"
-            exit
-        fi
-        # adding the repo to the list of repos in /home/shiishii/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json
-        # if the repo was not already present
-        if ! grep -q "$path" "$PROJECTS_FILE"; then
-            # Add the repo to the list of repos
-            cat "$PROJECTS_FILE" | jq ". += [{\"name\": \"$repo\", \"rootPath\": \"$path\", \"paths\": [], \"tags\": [\"$user\"]}]" > "$PROJECTS_FILE.tmp"
-            mv "$PROJECTS_FILE.tmp" "$PROJECTS_FILE"
-        fi
     else
         # If the clone failed, then print an error
         echo "Error cloning $url"
+    fi
+
+    # Check if JQ is installed
+    if ! command -v jq &> /dev/null
+    then
+        echo "If you install jq, then the repo will be added to the list of repos in the VSCode's project manager extension"
+        exit
+    fi
+    # adding the repo to the list of repos in /home/shiishii/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json
+    # if the repo was not already present
+    if ! grep -q "$path" "$PROJECTS_FILE"; then
+        # Add the repo to the list of repos
+        cat "$PROJECTS_FILE" | jq ". += [{\"name\": \"$repo\", \"rootPath\": \"$path\", \"paths\": [], \"tags\": [\"$user\"]}]" > "$PROJECTS_FILE.tmp"
+        mv "$PROJECTS_FILE.tmp" "$PROJECTS_FILE"
     fi
 else
     # If the first argument is not a valid url, then print an error
