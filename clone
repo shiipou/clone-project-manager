@@ -10,8 +10,10 @@ if [ "$1" = "upgrade" ]; then
     echo "Script path: $script_path"
 
     echo "Upgrading..."
-    curl -fsSLo "$script_path" https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
-    chmod +x "$script_path"
+    tmp=$(mktemp)
+    curl -fsSLo "$tmp" https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
+    chmod +x "$tmp"
+    mv "$tmp" "$script_path"
     echo "Done"
     exit
 fi
