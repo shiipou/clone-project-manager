@@ -20,3 +20,8 @@ Just clone the project like you'll do it with `git clone`.
 clone https://github.com/shiipou/clone-project-manager
 ```
 
+## Why using this ?
+
+This help to keep your home directory clean. To sort your workspaces by git remote server and groups, and will automatically add it to your [vscode project managment](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
+
+![image](https://github.com/shiipou/clone-project-manager/assets/38187238/331cca5a-9a36-4a17-bb61-133f06db9e5d)
