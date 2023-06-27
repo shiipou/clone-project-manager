@@ -6,8 +6,9 @@ if [ "$1" = "upgrade" ]; then
     if [ -z "$script_path" ]; then
         # Get absolute path of the script using $0 since $script_path is empty
         script_path=$(readlink -f "$0")
-        echo "Script path: $script_path"
     fi
+    echo "Script path: $script_path"
+
     echo "Upgrading..."
     curl -fsSLo "$script_path" https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
     chmod +x "$script_path"
