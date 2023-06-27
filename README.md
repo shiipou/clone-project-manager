@@ -9,9 +9,13 @@ Just download the `clone` file and place it in a directory that was in your path
 
 I personnaly put it in `~/bin/clone`
 
-Quick curl script to do it :
+Quick curl script to do it with one of the following step :
 ```sh
 curl -fSLo ~/bin/clone https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
+```
+or
+```sh
+curl -fsSL https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone | bash -- install
 ```
 
 ### Upgrading

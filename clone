@@ -12,6 +12,14 @@ if [ "$1" = "install" ]; then
     fi
     # Extract path of the script
     script_dir=$(dirname "$script_path")
+    # check if script_dir is in PATH
+    if [[ ":$PATH:" != *":$script_dir:"* ]]; then
+        echo "Adding $script_dir to PATH"
+        # Add script_dir to PATH
+        echo "export PATH=\"\$PATH:$script_dir\"" >> ~/.bashrc
+        # Reload .bashrc
+        source ~/.bashrc
+    fi
     # Create the directory if it doesn't exist
     if [ ! -d "$script_dir" ]; then
         mkdir -p "$script_dir"
