@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# if $1 equals upgrade, then upgrade the script
+if [ "$1" = "upgrade" ]; then
+    script_path=$(which clone)
+    if [ -z "$script_path" ]; then
+        # Get absolute path of the script using $0 since $script_path is empty
+        script_path=$(readlink -f "$0")
+        echo "Script path: $script_path"
+    fi
+    echo "Upgrading..."
+    curl -fsSLo "$script_path" https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
+    chmod +x "$script_path"
+    echo "Done"
+    exit
+fi
+
 # Regex for github https or ssh url
 regex="^(http|https|git)(:\/\/|@)([^\/:]+)[\/:]([^\/:]+)\/(.+)(.git)?$"
 PROJECTS_FILE="$HOME/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json"
