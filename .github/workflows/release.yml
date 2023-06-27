@@ -16,5 +16,4 @@ jobs:
     uses: shiipou/github-actions/.github/workflows/release.yml@main
     with:
       release-branches: stable
-      download-artifacts: true
       assets: clone
