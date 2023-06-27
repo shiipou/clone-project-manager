@@ -22,7 +22,7 @@ jobs:
         with:
           path: clone
   release:
-    uses: shiipou/github-actions/.github/workflows/relearelease-branchesse.yml@main
+    uses: shiipou/github-actions/.github/workflows/release.yml@main
     with:
       release-branches: stable
       download-artifacts: true
