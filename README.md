@@ -15,7 +15,7 @@ curl -fSLo ~/bin/clone https://raw.githubusercontent.com/shiipou/clone-project-m
 ```
 or
 ```sh
-curl -fsSL https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone | bash -- install
+curl -fsSL https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone | sh -s -- install
 ```
 
 ### Upgrading
