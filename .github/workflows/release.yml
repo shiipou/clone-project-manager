@@ -22,6 +22,7 @@ jobs:
         with:
           path: clone
   release:
+    needs: build
     uses: shiipou/github-actions/.github/workflows/release.yml@main
     with:
       release-branches: stable
