@@ -3,6 +3,8 @@ A simple script to help me to keep my projects clean when I clone it
 
 ## Installation
 
+### New installation
+
 Just download the `clone` file and place it in a directory that was in your path.
 
 I personnaly put it in `~/bin/clone`
@@ -11,6 +13,15 @@ Quick curl script to do it :
 ```sh
 curl -fSLo ~/bin/clone https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
 ```
+
+### Upgrading
+
+Just run the upgrade script
+
+```sh
+clone upgrade
+```
+
 
 ## How to use it ?
 
