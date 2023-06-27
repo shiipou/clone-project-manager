@@ -1,5 +1,29 @@
 #!/bin/bash
 
+script_url=https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
+
+# if $1 equals install, then install the script
+if [ "$1" = "install" ]; then
+    echo "Installing..."
+    # Get absolute path of the script
+    script_path=$2
+    if [ -z "$script_path" ]; then
+        script_path=$HOME/.local/bin/clone
+    fi
+    # Extract path of the script
+    script_dir=$(dirname "$script_path")
+    # Create the directory if it doesn't exist
+    if [ ! -d "$script_dir" ]; then
+        mkdir -p "$script_dir"
+    fi
+    # Download the script
+    tmp=$(mktemp)
+    curl -fsSLo "$tmp" "$script_url"
+    chmod +x "$tmp"
+    mv "$tmp" "$script_path"
+    echo "Done"
+    exit
+fi
 # if $1 equals upgrade, then upgrade the script
 if [ "$1" = "upgrade" ]; then
     script_path=$(which clone)
@@ -11,7 +35,7 @@ if [ "$1" = "upgrade" ]; then
 
     echo "Upgrading..."
     tmp=$(mktemp)
-    curl -fsSLo "$tmp" https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
+    curl -fsSLo "$tmp" "$script_url"
     chmod +x "$tmp"
     mv "$tmp" "$script_path"
     echo "Done"
