@@ -12,19 +12,9 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          path: clone
   release:
-    needs: build
     uses: shiipou/github-actions/.github/workflows/release.yml@main
     with:
       release-branches: stable
       download-artifacts: true
-      assets: artifacts/clone/clone
+      assets: clone
