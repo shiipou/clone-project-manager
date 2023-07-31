@@ -27,7 +27,6 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: clone
           path: ./clone
 
   release:
@@ -39,4 +38,4 @@ jobs:
       changelogs: ${{ needs.get-version.outputs.changelogs }}
       is-prerelease: ${{ needs.get-version.outputs.is-prerelease == 'true' }}
       download-artifacts: true
-      assets: artifacts/clone
+      assets: artifacts/artifact/clone
