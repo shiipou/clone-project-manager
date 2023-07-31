@@ -70,6 +70,7 @@ if [[ $1 =~ $regex ]]; then
             mv "$PROJECTS_FILE.tmp" "$PROJECTS_FILE"
         fi
     fi
+    echo -e "Your project is available at this path : \n\t ${path}"
     echo "Done"
 else
     # If the first argument is not a valid url, then print an error
