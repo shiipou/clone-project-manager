@@ -30,7 +30,7 @@ jobs:
           path: ./clone
 
   release:
-    needs: get-version
+    needs: [get-version, prepare-artifacts]
     if: ${{ needs.get-version.outputs.will-release }}
     uses: shiipou/github-actions/.github/workflows/release.yml@main
     with:
