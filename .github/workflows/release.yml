@@ -17,6 +17,18 @@ jobs:
     with:
       release-branches: "^(main)$"
       prerelease-branches: "^(rc|beta|alpha)$"
+  
+  prepare-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./clone
+
   release:
     needs: get-version
     if: ${{ needs.get-version.outputs.will-release }}
@@ -25,4 +37,5 @@ jobs:
       version: ${{ needs.get-version.outputs.version }}
       changelogs: ${{ needs.get-version.outputs.changelogs }}
       is-prerelease: ${{ needs.get-version.outputs.is-prerelease == 'true' }}
-      assets: clone
+      download-artifacts: true
+      assets: artifacts/clone
