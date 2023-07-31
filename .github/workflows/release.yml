@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - stable
+      - main
       - rc
       - beta
       - alpha
@@ -12,8 +12,16 @@ permissions:
   contents: write
 
 jobs:
+  get-version:
+    uses: shiipou/github-actions/.github/workflows/get-version.yml@main
+    with:
+      prerelease-branches: "^(rc|beta|alpha)$"
   release:
+    needs: get-version
+    if: ${{ needs.get-version.outputs.will-release }}
     uses: shiipou/github-actions/.github/workflows/release.yml@main
     with:
-      release-branches: stable
+      version: ${{ needs.get-version.outputs.version }}
+      changelogs: ${{ needs.get-version.outputs.changelogs }}
+      is-prerelease: ${{ needs.get-version.outputs.is-prerelease }}
       assets: clone
