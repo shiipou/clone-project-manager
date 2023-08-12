@@ -1,6 +1,6 @@
 #!/bin/bash
 
-script_url=https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
+script_url=https://raw.githubusercontent.com/shiipou/clone-project-manager/main/clone
 
 # if $1 equals install, then install the script
 if [ "$1" = "install" ]; then
