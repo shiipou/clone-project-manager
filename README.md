@@ -11,11 +11,11 @@ I personnaly put it in `~/bin/clone`
 
 Quick curl script to do it with one of the following step :
 ```sh
-curl -fSLo ~/bin/clone https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/clone
+curl -fSLo ~/bin/clone https://raw.githubusercontent.com/shiipou/clone-project-manager/main/clone
 ```
 or
 ```sh
-curl -fsSL https://raw.githubusercontent.com/shiipou/clone-project-manager/stable/install.sh | bash -s -- install
+curl -fsSL https://raw.githubusercontent.com/shiipou/clone-project-manager/main/install.sh | bash -s -- install
 ```
 
 ### Upgrading
