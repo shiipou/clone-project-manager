@@ -22,7 +22,11 @@ fi
 
 # Regex for github https or ssh url
 regex="^(http|https|git)(:\/\/|@)([^\/:]+)[\/:]([^\/:]+)\/(.+)(.git)?$"
-PROJECTS_FILE="$HOME/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    PROJECTS_FILE="$HOME/Library/Application Support/Code/User/globalStorage/alefragnani.project-manager/projects.json"
+else
+    PROJECTS_FILE="$HOME/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json"
+fi
 DEFAULT_GIT_HOME="$HOME/dev"
 if [ -z "$GIT_HOME" ]; then
     echo "GIT_HOME is not set. Using default value: $DEFAULT_GIT_HOME"
