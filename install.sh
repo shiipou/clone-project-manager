@@ -14,11 +14,23 @@ if [ "$1" = "install" ]; then
     script_dir=$(dirname "$script_path")
     # check if script_dir is in PATH
     if [[ ":$PATH:" != *":$script_dir:"* ]]; then
+        if [ -n "$BASH_VERSION" ]; then
+            # Bash shell
+            # Linux (bashrc)
+            shell_rc_file=~/.bashrc
+        elif [ -n "$ZSH_VERSION" ]; then
+            # Zsh shell (zshrc)
+            shell_rc_file=~/.zshrc
+        else
+            echo "Unsupported shell"
+            exit 1
+        fi
+
         echo "Adding $script_dir to PATH"
         # Add script_dir to PATH
-        echo "export PATH=\"\$PATH:$script_dir\"" >> ~/.bashrc
-        # Reload .bashrc
-        source ~/.bashrc
+        echo "export PATH=\"\$PATH:$script_dir\"" >> $shell_rc_file
+        # Reload shell rc file
+        source $shell_rc_file
     fi
     # Create the directory if it doesn't exist
     if [ ! -d "$script_dir" ]; then
