@@ -3,6 +3,10 @@ A simple script to help me to keep my projects clean when I clone it
 
 ## Installation
 
+### Requirements
+
+- `jq` : See https://jqlang.github.io/jq/download/
+  
 ### New installation
 
 Just download the `clone` file and place it in a directory that was in your path.
