@@ -29,7 +29,7 @@ elif [[ "$OSTYPE" == "msys" ]]; then
     PROJECTS_FILE="/c/Users/$USERNAME/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json"
 elif [[ $(grep -i microsoft /proc/version) ]]; then
     PROJECTS_FILE="/mnt/c/Users/$USER/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json"
-    path_prefix='vscode-remote://wsl'
+    path_prefix='vscode-remote://wsl+ubuntu'
 else
     PROJECTS_FILE="$HOME/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json"
 fi
