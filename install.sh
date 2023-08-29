@@ -16,9 +16,21 @@ if [ "$1" = "install" ]; then
     if [[ ":$PATH:" != *":$script_dir:"* ]]; then
         echo "Adding $script_dir to PATH"
         # Add script_dir to PATH
-        echo "export PATH=\"\$PATH:$script_dir\"" >> ~/.bashrc
-        # Reload .bashrc
-        source ~/.bashrc
+
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS (zshrc)
+            shell_rc_file=~/.zshrc
+            echo "export PATH=\"\$PATH:$script_dir\"" >> $shell_rc_file
+            # Reload shell rc file
+            zsh -c "source $shell_rc_file"
+        else
+            # Linux (bashrc)
+            shell_rc_file=~/.bashrc
+            echo "export PATH=\"\$PATH:$script_dir\"" >> $shell_rc_file
+            # Reload shell rc file
+            source $shell_rc_file
+        fi
+
     fi
     # Create the directory if it doesn't exist
     if [ ! -d "$script_dir" ]; then
