@@ -1,0 +1,30 @@
+[package]
+name = "clone"
+version = "0.0.0"
+edition = "2021"
+include = [
+    "**/*.rs",
+    "Cargo.toml"
+]
+
+[lib]
+name = "clone_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "clone"
+path = "src/bin/main.rs"
+required-features = ["cli"]
+
+[features]
+cli = ["clap"]
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"], optional = true }
+dirs = "5.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+git2 = "0.19"
+auth-git2 = "0.5"
+shellexpand = "3.1"
