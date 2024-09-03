@@ -17,7 +17,7 @@ I personnaly put it in `~/bin/clone`
 
 Quick curl script to do it with one of the following step :
 ```sh
-curl -fSLo /usr/local/bin/clone https://raw.githubusercontent.com/shiipou/clone-project-manager/main/clone
+curl -fSLo /usr/local/bin/clone https://github.com/shiipou/clone-project-manager/releases/latest/download/clone_$(uname -s)_$(uname -m)
 ```
 
 or with cargo :
