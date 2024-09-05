@@ -1,0 +1,111 @@
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - rc
+      - beta
+      - alpha
+
+permissions:
+  contents: write
+
+jobs:
+  get-version:
+    uses: shiipou/github-actions/.github/workflows/get-version.yml@main
+    with:
+      prerelease-branches: "^(rc|beta|alpha)$"
+  build:
+    needs: get-version
+    if: ${{ needs.get-version.outputs.will-release }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    env:
+      VERSION: ${{ needs.get-version.outputs.version }}
+    strategy:
+      matrix: # Need to find what's the best target for `x86-x64-linux` and remove the others (gnu or musl)
+        include:
+        - target: aarch64-unknown-linux-musl
+          os: linux
+          arch: aarch64
+          runner: ubuntu-20.04
+        - target: x86_64-unknown-linux-musl
+          os: linux
+          arch: x86_64
+          runner: ubuntu-20.04
+        - target: x86_64-pc-windows-msvc
+          os: windows
+          arch: x86_64
+          runner: windows-2022
+          file_extension: '.exe'
+        - target: aarch64-pc-windows-msvc
+          os: windows
+          arch: aarch64
+          runner: windows-2022
+          file_extension: '.exe'
+        - target: x86_64-apple-darwin
+          os: macos
+          arch: x86_64
+          runner: macos-latest
+        - target: aarch64-apple-darwin
+          os: macos
+          arch: aarch64
+          runner: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+        target: ${{ matrix.target }}
+
+    - name: Install cargo-edit
+      uses: actions-rs/cargo@v1
+      with:
+        command: install
+        args: cargo-edit
+
+    - name: Set version
+      uses: actions-rs/cargo@v1
+      with:
+        command: set-version
+        args: ${{ env.VERSION }}
+
+    - name: Build target
+      uses: actions-rs/cargo@v1
+      with:
+        use-cross: true
+        command: build
+        args: --release -F cli -F permissive --target ${{ matrix.target }}
+
+    - name: Rename artifact to platform specific name
+      run: |
+        mv target/${{ matrix.target }}/release/dofigen${{ matrix.file_extension }} ./dofigen-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.file_extension }}
+
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: dofigen-${{ matrix.os }}-${{ matrix.arch }}
+        path: ./dofigen-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.file_extension }}
+      
+  release:
+    needs: [ get-version, build ]
+    if: ${{ needs.get-version.outputs.will-release }}
+    uses: shiipou/github-actions/.github/workflows/release.yml@main
+    with:
+      version: ${{ needs.get-version.outputs.version }}
+      changelogs: ${{ needs.get-version.outputs.changelogs }}
+      is-prerelease: ${{ needs.get-version.outputs.is-prerelease }}
+      download-artifacts: true
+      assets: artifacts/
