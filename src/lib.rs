@@ -54,9 +54,12 @@ impl Default for AppConfig {
                     let win_user_home_path = format!("/mnt/c/Users/{}", username);
                     let wsl_user_home_path =
                         std::env::var("HOME").expect("'HOME' environment variable must be set.");
+                    let wsl_distro_name = std::env::var("WSL_DISTRO_NAME").expect(
+                        "'WSL_DISTRO_NAME' environment variable must be set in WSL environment.",
+                    );
 
                     AppConfig {
-                            workspaces_dir: format!("{}/workspaces", wsl_user_home_path).into(),
+                            workspaces_dir: format!("vscode-remote://wsl+{}{}/workspaces", wsl_distro_name, wsl_user_home_path).into(),
                             nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", wsl_user_home_path).into(),
                             vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", win_user_home_path).into(),
                             regex: DEFAULT_REGEX.to_string()

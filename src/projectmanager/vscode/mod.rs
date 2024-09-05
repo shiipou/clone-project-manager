@@ -33,7 +33,7 @@ pub fn add_project(
     debug: bool,
 ) {
     // Read the JSON file
-    let json_data = fs::read_to_string(&target_path).expect("Unable to read file");
+    let json_data = fs::read_to_string(&target_path).unwrap_or("[]".to_string());
     let mut entries: Vec<Entry> =
         serde_json::from_str(&json_data).expect("JSON was not well-formed");
     let must_add = !entries.iter().any(|e| e.root_path == workspace);

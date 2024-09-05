@@ -136,7 +136,7 @@ checksum = "1462739cb27611015575c0c11df5df7601141071f07518d56fcc1be504cbec97"
 
 [[package]]
 name = "clone-project-manager"
-version = "0.0.0"
+version = "2.0.0"
 dependencies = [
  "auth-git2",
  "clap",
