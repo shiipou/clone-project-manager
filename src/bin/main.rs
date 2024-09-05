@@ -32,6 +32,11 @@ struct Args {
     /// This save the config to the configfile.
     #[clap(long, action)]
     save: bool,
+
+    /// To use a custom regex to define what's the host, the group, and the name of the repository.
+    /// [default: "^(?:https://|git@)([^/:]+)[/:]([^/]+)/([^\.]+(?:\.git)?)$"]
+    #[clap(short, long)]
+    regex: Option<String>,
 }
 
 fn main() {
@@ -44,6 +49,7 @@ fn main() {
     let vscode_path = args.vscode;
     let skip_clone = args.skip_clone;
     let save = args.save;
+    let regex_input = args.regex;
 
     let mut config = AppConfig::load();
 
@@ -65,6 +71,10 @@ fn main() {
             .into_string()
             .expect("'vscode' arg parsing error");
     }
+    let regex_str = match regex_input {
+        Some(regex) => regex,
+        None => config.regex.to_owned(),
+    };
 
     if save {
         config.save();
@@ -75,7 +85,14 @@ fn main() {
         None => {
             let workspaces_dir = shellexpand::tilde(&config.workspaces_dir).to_string();
             let workspaces_dir = Path::new(&workspaces_dir);
-            workspaces_dir.join(parse_repo_url(&repo_url)).to_path_buf()
+            let (host, group, name) = parse_repo_url(&repo_url, &regex_str).expect(
+                format!("{:?} didn't match the regex {:?}", &repo_url, &regex_str).as_str(),
+            );
+            workspaces_dir
+                .join(host)
+                .join(group)
+                .join(name)
+                .to_path_buf()
         }
     };
 

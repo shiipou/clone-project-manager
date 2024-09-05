@@ -1,5 +1,5 @@
 [package]
-name = "clone"
+name = "clone-project-manager"
 version = "0.0.0"
 edition = "2021"
 include = [
@@ -28,3 +28,5 @@ toml = "0.8"
 git2 = "0.19"
 auth-git2 = "0.5"
 shellexpand = "3.1"
+regex = "1.10"
+

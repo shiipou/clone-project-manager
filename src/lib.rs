@@ -1,6 +1,7 @@
 use auth_git2::GitAuthenticator;
 use dirs::config_dir;
 use git2::{Error, Repository};
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -8,11 +9,15 @@ use std::path::{Path, PathBuf};
 pub mod projectmanager;
 //use crate::projectmanager::{nvim, vscode};
 
+const DEFAULT_REGEX: &str = r"^(?:https://|git@)([^/:]+)[/:]([^/]+)/([^\.]+(?:\.git)?)$";
+
 #[derive(Serialize, Deserialize)]
+#[serde(default)]
 pub struct AppConfig {
     pub workspaces_dir: String,
     pub nvim_projectmanager_path: String,
     pub vscode_projectmanager_path: String,
+    pub regex: String,
 }
 
 impl AppConfig {
@@ -23,50 +28,7 @@ impl AppConfig {
             toml::from_str(&config_data).expect("Invalid config file")
         } else {
             // Default configuration
-            match detect_current_os() {
-                "wsl" => {
-                    if let Some(username) = get_wsl_user_name() {
-                        let win_user_home_path = format!("/mnt/c/Users/{}", username);
-                        let wsl_user_home_path = std::env::var("HOME")
-                            .expect("'HOME' environment variable must be set.");
-
-                        AppConfig {
-                            workspaces_dir: format!("{}/workspaces", wsl_user_home_path),
-                            nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", wsl_user_home_path),
-                            vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", win_user_home_path)
-                        }
-                    } else {
-                        panic!("Cannot get WSL username in a WSL environment, that must never happen, that mean powershell.exe didn't exist or didn't provide the environment variable $env:USERNAME.");
-                    }
-                }
-                "macos" => {
-                    let user_home_path =
-                        std::env::var("HOME").expect("'HOME' environment variable must be set.");
-                    AppConfig {
-                        workspaces_dir: format!("{}/workspaces", user_home_path),
-                        nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path),
-                        vscode_projectmanager_path: format!("{}/Library/Application Support/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path)
-                    }
-                }
-                "windows" => {
-                    let user_home_path = std::env::var("USERPROFILE")
-                        .expect("'USERPROFILE' environment variable must be set.");
-                    AppConfig {
-                        workspaces_dir: format!("{}/workspaces", user_home_path),
-                        nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", user_home_path),
-                        vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path)
-                    }
-                }
-                _linux => {
-                    let user_home_path =
-                        std::env::var("HOME").expect("'HOME' environment variable must be set.");
-                    AppConfig {
-                        workspaces_dir: format!("{}/workspaces", user_home_path),
-                        nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path),
-                        vscode_projectmanager_path:format!("{}/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path)
-                    }
-                }
-            }
+            Self::default()
         }
     }
 
@@ -84,14 +46,69 @@ impl AppConfig {
     }
 }
 
-pub fn parse_repo_url(url: &str) -> PathBuf {
-    let url = url.trim_end_matches(".git");
-    let url = url
-        .replace("https://", "")
-        .replace("git@", "")
-        .replace(":", "/");
+impl Default for AppConfig {
+    fn default() -> Self {
+        match detect_current_os() {
+            "wsl" => {
+                if let Some(username) = get_wsl_user_name() {
+                    let win_user_home_path = format!("/mnt/c/Users/{}", username);
+                    let wsl_user_home_path =
+                        std::env::var("HOME").expect("'HOME' environment variable must be set.");
 
-    PathBuf::from(url)
+                    AppConfig {
+                            workspaces_dir: format!("{}/workspaces", wsl_user_home_path),
+                            nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", wsl_user_home_path),
+                            vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", win_user_home_path),
+                            regex: DEFAULT_REGEX.to_string()
+                        }
+                } else {
+                    panic!("Cannot get WSL username in a WSL environment, that must never happen, that mean powershell.exe didn't exist or didn't provide the environment variable $env:USERNAME.");
+                }
+            }
+            "macos" => {
+                let user_home_path =
+                    std::env::var("HOME").expect("'HOME' environment variable must be set.");
+                AppConfig {
+                        workspaces_dir: format!("{}/workspaces", user_home_path),
+                        nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path),
+                        vscode_projectmanager_path: format!("{}/Library/Application Support/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path),
+                        regex: DEFAULT_REGEX.to_string()
+                    }
+            }
+            "windows" => {
+                let user_home_path = std::env::var("USERPROFILE")
+                    .expect("'USERPROFILE' environment variable must be set.");
+                AppConfig {
+                        workspaces_dir: format!("{}/workspaces", user_home_path),
+                        nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", user_home_path),
+                        vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path),
+                        regex: DEFAULT_REGEX.to_string()
+                    }
+            }
+            _linux => {
+                let user_home_path =
+                    std::env::var("HOME").expect("'HOME' environment variable must be set.");
+                AppConfig {
+                    workspaces_dir: format!("{}/workspaces", user_home_path),
+                    nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path),
+                    vscode_projectmanager_path:format!("{}/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path),
+                    regex: DEFAULT_REGEX.to_string()
+                }
+            }
+        }
+    }
+}
+
+pub fn parse_repo_url(url: &str, regex: &str) -> Result<(String, String, String), ()> {
+    let parser = Regex::new(regex).unwrap();
+    if let Some(result) = parser.captures(url) {
+        let host = &result[1];
+        let group = &result[2];
+        let name = &result[3];
+        Ok((host.to_string(), group.to_string(), name.to_string()))
+    } else {
+        Err(())
+    }
 }
 
 pub fn clone_repo(url: &str, repo_path: &Path) -> Result<Repository, Error> {
@@ -139,7 +156,7 @@ fn get_wsl_user_name() -> Option<String> {
         .output()
     {
         if let Ok(output) = String::from_utf8(output_utf8.stdout) {
-            Some(output)
+            Some(output.trim().to_string())
         } else {
             None
         }
