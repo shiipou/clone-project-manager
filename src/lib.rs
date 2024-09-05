@@ -14,6 +14,8 @@ const DEFAULT_REGEX: &str = r"^(?:https://|git@)([^/:]+)[/:]([^/]+)/([^\.]+(?:\.
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(default)]
 pub struct AppConfig {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vscode_path_prefix: Option<String>,
     pub workspaces_dir: PathBuf,
     pub nvim_projectmanager_path: PathBuf,
     pub vscode_projectmanager_path: PathBuf,
@@ -59,7 +61,8 @@ impl Default for AppConfig {
                     );
 
                     AppConfig {
-                            workspaces_dir: format!("vscode-remote://wsl+{}{}/workspaces", wsl_distro_name, wsl_user_home_path).into(),
+                            vscode_path_prefix: Some(format!("vscode-remote://wsl+{}", wsl_distro_name)),
+                            workspaces_dir: format!("{}/workspaces", wsl_user_home_path).into(),
                             nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", wsl_user_home_path).into(),
                             vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", win_user_home_path).into(),
                             regex: DEFAULT_REGEX.to_string()
@@ -72,16 +75,18 @@ impl Default for AppConfig {
                 let user_home_path =
                     std::env::var("HOME").expect("'HOME' environment variable must be set.");
                 AppConfig {
-                        workspaces_dir: format!("{}/workspaces", user_home_path).into(),
-                        nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path).into(),
-                        vscode_projectmanager_path: format!("{}/Library/Application Support/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
-                        regex: DEFAULT_REGEX.to_string()
-                    }
+                    vscode_path_prefix: None,
+                    workspaces_dir: format!("{}/workspaces", user_home_path).into(),
+                    nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path).into(),
+                    vscode_projectmanager_path: format!("{}/Library/Application Support/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
+                    regex: DEFAULT_REGEX.to_string()
+                }
             }
             "windows" => {
                 let user_home_path = std::env::var("USERPROFILE")
                     .expect("'USERPROFILE' environment variable must be set.");
                 AppConfig {
+                    vscode_path_prefix: None,
                         workspaces_dir: format!("{}/workspaces", user_home_path).into(),
                         nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", user_home_path).into(),
                         vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
@@ -92,6 +97,7 @@ impl Default for AppConfig {
                 let user_home_path =
                     std::env::var("HOME").expect("'HOME' environment variable must be set.");
                 AppConfig {
+                    vscode_path_prefix: None,
                     workspaces_dir: format!("{}/workspaces", user_home_path).into(),
                     nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path).into(),
                     vscode_projectmanager_path:format!("{}/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
@@ -169,10 +175,7 @@ fn get_wsl_user_name() -> Option<String> {
 }
 
 fn detect_wsl_with_envs() -> bool {
-    match std::env::var("WSL_DISTRO_NAME") {
-        Ok(_) => true,
-        _ => false,
-    }
+    std::env::var("WSL_DISTRO_NAME").is_ok()
 }
 
 pub fn add_project_to_nvim(

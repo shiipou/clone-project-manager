@@ -132,12 +132,12 @@ fn main() {
     let clone_location = match target_path {
         Some(path) => path,
         None => {
-            let workspaces_dir = Path::new(&config.workspaces_dir);
+            let workspaces_dir = &config.workspaces_dir;
+
             workspaces_dir
                 .join(host.clone())
                 .join(group.clone())
                 .join(name.clone())
-                .to_path_buf()
         }
     };
 
@@ -168,9 +168,20 @@ fn main() {
     if debug {
         println!("Writing to {:?}", config.vscode_projectmanager_path);
     }
+
+    let path_with_prefix = match &config.vscode_path_prefix {
+        Some(prefix) => {
+            let prefixed_path = prefix.to_owned()
+                + clone_location
+                    .to_str()
+                    .expect("Cannot parse clone_location as a string");
+            Path::new(&prefixed_path).to_path_buf()
+        }
+        None => clone_location,
+    };
     add_project_to_vscode(
         config.vscode_projectmanager_path,
-        clone_location,
+        path_with_prefix,
         host,
         group,
         name,
