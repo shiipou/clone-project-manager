@@ -80,14 +80,14 @@ fn main() {
         config.save();
     }
 
+    let (host, group, name) = parse_repo_url(&repo_url, &regex_str)
+        .expect(format!("{:?} didn't match the regex {:?}", &repo_url, &regex_str).as_str());
+
     let clone_location = match target_path {
         Some(path) => path,
         None => {
             let workspaces_dir = shellexpand::tilde(&config.workspaces_dir).to_string();
             let workspaces_dir = Path::new(&workspaces_dir);
-            let (host, group, name) = parse_repo_url(&repo_url, &regex_str).expect(
-                format!("{:?} didn't match the regex {:?}", &repo_url, &regex_str).as_str(),
-            );
             workspaces_dir
                 .join(host)
                 .join(group)
@@ -108,5 +108,18 @@ fn main() {
         };
     }
 
-    add_project_to_nvim()
+    add_project_to_nvim(
+        config.nvim_projectmanager_path,
+        clone_location,
+        host,
+        group,
+        name,
+    );
+    add_project_to_vscode(
+        config.vscode_projectmanager_path,
+        clone_location,
+        host,
+        group,
+        name,
+    );
 }

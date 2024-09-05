@@ -7,7 +7,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 pub mod projectmanager;
-//use crate::projectmanager::{nvim, vscode};
+use crate::projectmanager::{nvim, vscode};
 
 const DEFAULT_REGEX: &str = r"^(?:https://|git@)([^/:]+)[/:]([^/]+)/([^\.]+(?:\.git)?)$";
 
@@ -172,4 +172,21 @@ fn detect_wsl_with_envs() -> bool {
     }
 }
 
-pub fn add_project_to_nvim() {}
+pub fn add_project_to_nvim(
+    target_path: PathBuf,
+    workspace: PathBuf,
+    host: String,
+    group: String,
+    name: String,
+) {
+    nvim::add_project(target_path, workspace, host, group, name)
+}
+pub fn add_project_to_vscode(
+    target_path: PathBuf,
+    workspace: PathBuf,
+    host: String,
+    group: String,
+    name: String,
+) {
+    vscode::add_project(target_path, workspace, host, group, name)
+}
