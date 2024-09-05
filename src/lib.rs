@@ -11,12 +11,12 @@ use crate::projectmanager::{nvim, vscode};
 
 const DEFAULT_REGEX: &str = r"^(?:https://|git@)([^/:]+)[/:]([^/]+)/([^\.]+(?:\.git)?)$";
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(default)]
 pub struct AppConfig {
-    pub workspaces_dir: String,
-    pub nvim_projectmanager_path: String,
-    pub vscode_projectmanager_path: String,
+    pub workspaces_dir: PathBuf,
+    pub nvim_projectmanager_path: PathBuf,
+    pub vscode_projectmanager_path: PathBuf,
     pub regex: String,
 }
 
@@ -56,9 +56,9 @@ impl Default for AppConfig {
                         std::env::var("HOME").expect("'HOME' environment variable must be set.");
 
                     AppConfig {
-                            workspaces_dir: format!("{}/workspaces", wsl_user_home_path),
-                            nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", wsl_user_home_path),
-                            vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", win_user_home_path),
+                            workspaces_dir: format!("{}/workspaces", wsl_user_home_path).into(),
+                            nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", wsl_user_home_path).into(),
+                            vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", win_user_home_path).into(),
                             regex: DEFAULT_REGEX.to_string()
                         }
                 } else {
@@ -69,9 +69,9 @@ impl Default for AppConfig {
                 let user_home_path =
                     std::env::var("HOME").expect("'HOME' environment variable must be set.");
                 AppConfig {
-                        workspaces_dir: format!("{}/workspaces", user_home_path),
-                        nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path),
-                        vscode_projectmanager_path: format!("{}/Library/Application Support/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path),
+                        workspaces_dir: format!("{}/workspaces", user_home_path).into(),
+                        nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path).into(),
+                        vscode_projectmanager_path: format!("{}/Library/Application Support/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
                         regex: DEFAULT_REGEX.to_string()
                     }
             }
@@ -79,9 +79,9 @@ impl Default for AppConfig {
                 let user_home_path = std::env::var("USERPROFILE")
                     .expect("'USERPROFILE' environment variable must be set.");
                 AppConfig {
-                        workspaces_dir: format!("{}/workspaces", user_home_path),
-                        nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", user_home_path),
-                        vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path),
+                        workspaces_dir: format!("{}/workspaces", user_home_path).into(),
+                        nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", user_home_path).into(),
+                        vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
                         regex: DEFAULT_REGEX.to_string()
                     }
             }
@@ -89,9 +89,9 @@ impl Default for AppConfig {
                 let user_home_path =
                     std::env::var("HOME").expect("'HOME' environment variable must be set.");
                 AppConfig {
-                    workspaces_dir: format!("{}/workspaces", user_home_path),
-                    nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path),
-                    vscode_projectmanager_path:format!("{}/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path),
+                    workspaces_dir: format!("{}/workspaces", user_home_path).into(),
+                    nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path).into(),
+                    vscode_projectmanager_path:format!("{}/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
                     regex: DEFAULT_REGEX.to_string()
                 }
             }
@@ -178,8 +178,9 @@ pub fn add_project_to_nvim(
     host: String,
     group: String,
     name: String,
+    debug: bool,
 ) {
-    nvim::add_project(target_path, workspace, host, group, name)
+    nvim::add_project(target_path, workspace, host, group, name, debug)
 }
 pub fn add_project_to_vscode(
     target_path: PathBuf,
@@ -187,6 +188,7 @@ pub fn add_project_to_vscode(
     host: String,
     group: String,
     name: String,
+    debug: bool,
 ) {
-    vscode::add_project(target_path, workspace, host, group, name)
+    vscode::add_project(target_path, workspace, host, group, name, debug)
 }
