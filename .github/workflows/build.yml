@@ -100,6 +100,6 @@ jobs:
     with:
       version: ${{ needs.get-version.outputs.version }}
       changelogs: ${{ needs.get-version.outputs.changelogs }}
-      is-prerelease: ${{ needs.get-version.outputs.is-prerelease }}
+      is-prerelease: ${{ steps.get-version.outputs.is-prerelease == 'true' }}
       download-artifacts: true
       assets: artifacts/
