@@ -17,6 +17,7 @@ path = "src/bin/main.rs"
 required-features = ["cli"]
 
 [features]
+default = ["cli"]
 cli = ["clap"]
 
 [dependencies]
