@@ -93,6 +93,12 @@ jobs:
         name: clone-${{ matrix.os }}-${{ matrix.arch }}
         path: ./clone-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.file_extension }}
       
+    - name: Publish cargo
+      if: ${{ needs.get-version.outputs.will-release }}
+      shell: bash
+      run: cargo publish -p clone-project-manager --allow-dirty --token "${{ secrets.CARGO_TOKEN }}"
+
+
   release:
     needs: [ get-version, build ]
     if: ${{ needs.get-version.outputs.will-release }}

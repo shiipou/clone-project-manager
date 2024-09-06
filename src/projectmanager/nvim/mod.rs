@@ -6,8 +6,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(default)]
 pub struct Entry {
-    command_exit: String,
-    command_start: String,
+    commandexit: Option<String>,
+    commandstart: Option<String>,
     path: PathBuf,
     name: String,
     current: u8,
@@ -19,8 +19,8 @@ impl Default for Entry {
             name: "".to_string(),
             path: PathBuf::from(""),
             current: 0,
-            command_start: "NvimTreeToggle".to_string(),
-            command_exit: "".to_string(),
+            commandstart: Some("NvimTreeToggle".to_string()),
+            commandexit: Some("".to_string()),
         }
     }
 }

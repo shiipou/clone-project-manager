@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 pub mod projectmanager;
 use crate::projectmanager::{nvim, vscode};
 
-const DEFAULT_REGEX: &str = r"^(?:https://|git@)([^/:]+)[/:]([^/]+)/([^\.]+(?:\.git)?)$";
+const DEFAULT_REGEX: &str = r"(?m)^(?:https?://|git@)?([^/:]+)[/:]([^/]+)/([^\.]+)(?:\.git)?$";
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(default)]
