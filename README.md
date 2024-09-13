@@ -1,45 +1,54 @@
-# clone-project-manager
-A simple tool that help to keep your workspace clean.
+# 🧬 clone-project-manager
 
-## Installation
+A simple tool to help keep your workspace clean and organized! 🧹✨
 
-### Requirements
+## 🚀 Installation
 
-The new version of the tool didn't have any requirements to use. But to be able to take adventage of all the power of this tool, I recommand you to use VSCode with `ProjectManager` extension and/or NeoVim with `ProjectMgr` plugin.
+### 📋 Requirements
 
-I personnaly use NVChad as neovim config.
-  
-### New installation
+The latest version of this tool doesn't have any specific requirements. However, to take full advantage of its power, we recommend using:
 
-Just download the `clone` file in the release section and place it in one of your path's directory.
+- VSCode with the `ProjectManager` extension
+- and/or NeoVim with the `ProjectMgr` plugin
 
-I personnaly put it in `~/bin/clone`
+I personally use NVChad as my Neovim configuration.
 
-Quick curl script to do it with one of the following step :
+### 🆕 New Installation
+
+Simply download the `clone` file from the release section and place it in one of your PATH directories. I personally put it in `~/bin/clone`.
+
+Quick curl script to install it in one step:
+
 ```sh
 curl -fSLo /usr/local/bin/clone https://github.com/shiipou/clone-project-manager/releases/latest/download/clone-$(uname -s)-$(uname -m)
 ```
 
-or with cargo :
+Alternatively, you can install it using Cargo:
+
 ```sh
 # You can specify the version by adding the --version argument.
 cargo install clone-project-manager
 ```
 
-## How to use it ?
+## 🛠️ How to Use
 
-Just clone the project like you'll do it with `git clone`.
+Just clone the project as you would with `git clone`:
 
 ```sh
 clone https://github.com/shiipou/clone-project-manager
 ```
 
-If you encounter any problems, You can customize the settings by using the arguments listed in `--help` and using the `--save` to keep them by default for next run.
+If you encounter any issues, you can customize the settings using the arguments listed in `--help`. Use the `--save` option to keep them as default for future runs.
 
-## Why using this ?
+## 🤔 Why Use This?
 
-This help to keep your home directory clean. To sort your workspaces by git remote server and groups, and will automatically add it to your [vscode project managment](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
+This tool helps keep your home directory clean by:
 
-![image](https://github.com/shiipou/clone-project-manager/assets/38187238/331cca5a-9a36-4a17-bb61-133f06db9e5d)
+1. Sorting your workspaces by git remote server and groups
+2. Automatically adding projects to your [VSCode Project Management](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
 
+Here's a visual representation of how it organizes your projects:
 
+![Project organization example](https://github.com/shiipou/clone-project-manager/assets/38187238/331cca5a-9a36-4a17-bb61-133f06db9e5d)
+
+Give it a try and experience a more organized development environment! 🎉
