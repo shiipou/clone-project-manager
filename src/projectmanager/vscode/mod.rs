@@ -45,7 +45,7 @@ pub fn add_project(
         let new_entry = Entry {
             name,
             root_path: workspace,
-            tags: [host, group].to_vec(),
+            tags: [group].to_vec(),
             ..Entry::default()
         };
 
