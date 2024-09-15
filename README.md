@@ -49,6 +49,7 @@ This tool helps keep your home directory clean by:
 
 Here's a visual representation of how it organizes your projects:
 
-![Project organization example](https://github.com/shiipou/clone-project-manager/assets/38187238/331cca5a-9a36-4a17-bb61-133f06db9e5d)
+![VSCode Project organization example](https://github.com/shiipou/clone-project-manager/assets/38187238/331cca5a-9a36-4a17-bb61-133f06db9e5d)
+![NVim Project organization example](https://github.com/user-attachments/assets/3355edc5-3ac8-4d89-872f-ec11698ff876)
 
 Give it a try and experience a more organized development environment! 🎉
