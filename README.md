@@ -9,7 +9,7 @@
 This tool has minimal dependencies, but to maximize its potential, we recommend the following tools for an optimized development workflow:
 
 - **VSCode** with the [Project Manager Extension](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
-- **NeoVim** with the [ProjectMgr Plugin](https://github.com/username/repository) (for NeoVim users, [NVChad](https://nvchad.com) is recommended as a configuration base)
+- **NeoVim** with the [ProjectMgr Plugin](https://github.com/charludo/projectmgr.nvim) (for NeoVim users, [NVChad](https://nvchad.com) is recommended as a configuration base)
 
 ### 🆕 Quick Installation
 
@@ -103,6 +103,7 @@ We welcome contributions from the community! If you encounter any bugs or have s
 ## 🔗 Useful Links
 
 - [VSCode Project Manager Extension](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
+- [NVim Project Manager Plugin](https://github.com/charludo/projectmgr.nvim)
 - [NVChad Configuration](https://nvchad.com)
 - [Cargo Installation Guide](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 
