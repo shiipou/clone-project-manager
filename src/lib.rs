@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 pub mod projectmanager;
 use crate::projectmanager::{nvim, vscode};
 
-const DEFAULT_REGEX: &str = r"(?m)^(?:https?://|git@)?([^/:]+)[/:]([^/]+)/([^\.]+)(?:\.git)?$";
+const DEFAULT_REGEX: &str = r"(?m)^(?:https?://|git@)?([^/:]+)[/:]([^/]+)/([^\.]+)(?:\.git)?/?$";
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(default)]
@@ -87,9 +87,9 @@ impl Default for AppConfig {
                     .expect("'USERPROFILE' environment variable must be set.");
                 AppConfig {
                     vscode_path_prefix: None,
-                        workspaces_dir: format!("{}/workspaces", user_home_path).into(),
-                        nvim_projectmanager_path: format!("{}/AppData/Roaming/nvim/", user_home_path).into(),
-                        vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
+                        workspaces_dir: format!("{}\\workspaces", user_home_path).into(),
+                        nvim_projectmanager_path: format!("{}\\AppData\\Roaming\\nvim\\", user_home_path).into(),
+                        vscode_projectmanager_path: format!("{}\\AppData\\Roaming\\Code\\User\\globalStorage\\alefragnani.project-manager\\projects.json", user_home_path).into(),
                         regex: DEFAULT_REGEX.to_string()
                     }
             }
