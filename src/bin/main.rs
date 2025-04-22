@@ -147,7 +147,7 @@ fn main() {
         let _ = match clone_repo(&repo_url, &clone_location) {
             Ok(_) => Ok(()),
             Err(e) => {
-                eprintln!("Error: {}", e.message());
+                eprintln!("Error: {}", e);
                 Err(())
             }
         };

@@ -1,10 +1,9 @@
-use auth_git2::GitAuthenticator;
 use dirs::config_dir;
-use git2::{Error, Repository};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 pub mod projectmanager;
 use crate::projectmanager::{nvim, vscode};
@@ -120,22 +119,29 @@ pub fn parse_repo_url(url: &str, regex: &str) -> Result<(String, String, String)
     }
 }
 
-pub fn clone_repo(url: &str, repo_path: &Path) -> Result<Repository, Error> {
+pub fn clone_repo(url: &str, repo_path: &Path) -> Result<(), String> {
     if repo_path.exists() {
-        Err(Error::new(
-            git2::ErrorCode::Exists,
-            git2::ErrorClass::Filesystem,
-            format!("repository already exist at {:?}", repo_path),
-        ))
+        Err(format!("repository already exist at {:?}", repo_path))
     } else {
-        //fs::create_dir_all(&repo_path).expect("Failed to create directories");
-        let auth = GitAuthenticator::default();
-        match auth.clone_repo(url, &repo_path) {
-            Ok(repo) => {
-                println!("Cloned into {:?}", repo_path);
-                Ok(repo)
+        // Try to create parent directories if needed
+        if let Some(parent) = repo_path.parent() {
+            if let Err(e) = fs::create_dir_all(parent) {
+                return Err(format!("Failed to create parent directories: {}", e));
             }
-            Err(e) => Err(e),
+        }
+        let status = Command::new("git")
+            .arg("clone")
+            .arg(url)
+            .arg(repo_path)
+            .status();
+
+        match status {
+            Ok(s) if s.success() => {
+                println!("Cloned into {:?}", repo_path);
+                Ok(())
+            }
+            Ok(s) => Err(format!("git exited with status: {}", s)),
+            Err(e) => Err(format!("Failed to execute git: {}", e)),
         }
     }
 }
