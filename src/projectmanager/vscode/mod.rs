@@ -36,15 +36,23 @@ pub fn add_project(
     let json_data = fs::read_to_string(&target_path).unwrap_or("[]".to_string());
     let mut entries: Vec<Entry> =
         serde_json::from_str(&json_data).expect("JSON was not well-formed");
-    let must_add = !entries.iter().any(|e| e.root_path == workspace);
+    let mut code_workspace = workspace;
+    if workspace.extension().is_none() {
+        let mut workspace_path = workspace.clone();
+        workspace_path.set_extension("code-workspace");
+        if workspace_path.exists() {
+            code_workspace = workspace_path;
+        }
+    }
+    let must_add = !entries.iter().any(|e| e.root_path == code_workspace);
     if debug && !must_add {
-        println!("Entry already exist {:?}.", workspace);
+        println!("Entry already exist {:?}.", code_workspace);
     }
     // Create a new entry from the provided parameters
     if must_add {
         let new_entry = Entry {
             name,
-            root_path: workspace,
+            root_path: code_workspace,
             tags: [group].to_vec(),
             ..Entry::default()
         };
