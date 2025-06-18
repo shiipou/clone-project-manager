@@ -182,7 +182,6 @@ fn main() {
     add_project_to_vscode(
         config.vscode_projectmanager_path,
         path_with_prefix,
-        host,
         group,
         name,
         debug,

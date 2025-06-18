@@ -27,7 +27,6 @@ impl Default for Entry {
 pub fn add_project(
     target_path: PathBuf,
     workspace: PathBuf,
-    host: String,
     group: String,
     name: String,
     debug: bool,
@@ -36,7 +35,7 @@ pub fn add_project(
     let json_data = fs::read_to_string(&target_path).unwrap_or("[]".to_string());
     let mut entries: Vec<Entry> =
         serde_json::from_str(&json_data).expect("JSON was not well-formed");
-    let mut code_workspace = workspace;
+    let mut code_workspace = workspace.clone();
     if workspace.extension().is_none() {
         let mut workspace_path = workspace.clone();
         workspace_path.set_extension("code-workspace");

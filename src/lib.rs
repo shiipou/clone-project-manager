@@ -197,10 +197,9 @@ pub fn add_project_to_nvim(
 pub fn add_project_to_vscode(
     target_path: PathBuf,
     workspace: PathBuf,
-    host: String,
     group: String,
     name: String,
     debug: bool,
 ) {
-    vscode::add_project(target_path, workspace, host, group, name, debug)
+    vscode::add_project(target_path, workspace, group, name, debug)
 }
