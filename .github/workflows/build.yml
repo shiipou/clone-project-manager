@@ -13,12 +13,12 @@ permissions:
 
 jobs:
   get-version:
-    uses: shiipou/github-actions/.github/workflows/get-version.yml@main
+    uses: lenra-io/github-actions/.github/workflows/get-version.yml@main
     with:
-      prerelease-branches: "^(rc|beta|alpha)$"
+      changelog-include-hidden-sections: true
   build:
     needs: get-version
-    if: ${{ needs.get-version.outputs.will-release == 'true' }}
+    if: needs.get-version.outputs.version != ''
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     env:
@@ -85,18 +85,18 @@ jobs:
       
   release:
     needs: [ get-version, build ]
-    if: ${{ needs.get-version.outputs.will-release == 'true' }}
-    uses: shiipou/github-actions/.github/workflows/release.yml@main
+    if: needs.get-version.outputs.version != ''
+    uses: lenra-io/github-actions/.github/workflows/upsert-release.yml@main
     with:
       version: ${{ needs.get-version.outputs.version }}
-      changelogs: ${{ needs.get-version.outputs.changelogs }}
-      is-prerelease: ${{ needs.get-version.outputs.is-prerelease == 'true' }}
-      download-artifacts: true
-      assets: artifacts/**/*
+      changelog: ${{ needs.get-version.outputs.changelog }}
+      prerelease: ${{ needs.get-version.outputs.channel != '' }}
+      with-artifact-path: '*'
+      with-artifact-merge: true
   
   publish:
     needs: [ get-version, build ]
-    if: ${{ needs.get-version.outputs.will-release == 'true' }}
+    if: needs.get-version.outputs.version != ''
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.get-version.outputs.version }}
