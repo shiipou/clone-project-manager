@@ -111,7 +111,7 @@ fn main() {
         let (from_repo_host, from_repo_group, from_repo_name) = parse_repo_url(
             &repo_url, &regex_str,
         )
-        .expect(format!("{:?} didn't match the regex {:?}", &repo_url, &regex_str).as_str());
+        .unwrap_or_else(|e| panic!("Failed to parse repo URL: {}", e));
 
         let host = match args.source {
             Some(source) => source,
@@ -135,22 +135,19 @@ fn main() {
             let workspaces_dir = &config.workspaces_dir;
 
             workspaces_dir
-                .join(host.clone())
-                .join(group.clone())
-                .join(name.clone())
+                .join(&host)
+                .join(&group)
+                .join(&name)
         }
     };
 
     println!("Project destination: {:?}", clone_location);
 
     if !skip_clone {
-        let _ = match clone_repo(&repo_url, &clone_location) {
-            Ok(_) => Ok(()),
-            Err(e) => {
-                eprintln!("Error: {}", e);
-                Err(())
-            }
-        };
+        if let Err(e) = clone_repo(&repo_url, &clone_location) {
+            eprintln!("Error: {}", e);
+            std::process::exit(1);
+        }
     }
 
     if debug {
@@ -162,7 +159,7 @@ fn main() {
         host.clone(),
         group.clone(),
         name.clone(),
-        debug.clone(),
+        debug,
     );
 
     if debug {

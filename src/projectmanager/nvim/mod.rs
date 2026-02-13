@@ -58,7 +58,7 @@ pub fn add_project(
         // Write the updated JSON data back to the file
         let updated_data =
             serde_json::to_string_pretty(&entries).expect("Failed to serialize JSON");
-        let _ = fs::create_dir_all(&target_path.parent().unwrap());
+        let _ = fs::create_dir_all(target_path.parent().unwrap());
         fs::write(&target_path, updated_data).expect("Unable to write Nvim JSON file");
         if debug {
             println!("Entry added {:#?}", new_entry);

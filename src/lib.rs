@@ -107,15 +107,15 @@ impl Default for AppConfig {
     }
 }
 
-pub fn parse_repo_url(url: &str, regex: &str) -> Result<(String, String, String), ()> {
-    let parser = Regex::new(regex).unwrap();
+pub fn parse_repo_url(url: &str, regex: &str) -> Result<(String, String, String), String> {
+    let parser = Regex::new(regex).map_err(|e| format!("Invalid regex: {}", e))?;
     if let Some(result) = parser.captures(url) {
         let host = &result[1];
         let group = &result[2];
         let name = &result[3];
         Ok((host.to_string(), group.to_string(), name.to_string()))
     } else {
-        Err(())
+        Err(format!("{:?} didn't match the regex {:?}", url, regex))
     }
 }
 
@@ -157,11 +157,7 @@ pub fn detect_current_os() -> &'static str {
 }
 
 fn _detect_wsl_with_powershell() -> bool {
-    if let Some(_output) = get_wsl_user_name() {
-        true
-    } else {
-        false
-    }
+    get_wsl_user_name().is_some()
 }
 
 fn get_wsl_user_name() -> Option<String> {

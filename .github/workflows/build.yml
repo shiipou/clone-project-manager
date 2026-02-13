@@ -54,41 +54,31 @@ jobs:
           runner: macos-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: stable
-        profile: minimal
-        override: true
-        target: ${{ matrix.target }}
+        targets: ${{ matrix.target }}
 
     - name: Install cargo-edit
-      uses: actions-rs/cargo@v1
-      with:
-        command: install
-        args: cargo-edit
+      run: cargo install cargo-edit
 
     - name: Set version
-      uses: actions-rs/cargo@v1
-      with:
-        command: set-version
-        args: ${{ env.VERSION }}
+      run: cargo set-version ${{ env.VERSION }}
+
+    - name: Install cross
+      run: cargo install cross
 
     - name: Build target
-      uses: actions-rs/cargo@v1
-      with:
-        use-cross: true
-        command: build
-        args: --release -F cli --target ${{ matrix.target }}
+      run: cross build --release -F cli --target ${{ matrix.target }}
 
     - name: Rename artifact to platform specific name
       run: |
         mv target/${{ matrix.target }}/release/clone${{ matrix.file_extension }} ./clone-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.file_extension }}
 
     - name: Upload
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: clone-${{ matrix.os }}-${{ matrix.arch }}
         path: ./clone-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.file_extension }}
@@ -112,31 +102,17 @@ jobs:
       VERSION: ${{ needs.get-version.outputs.version }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        profile: minimal
-        override: true
-        target: ${{ matrix.target }}
+      uses: dtolnay/rust-toolchain@stable
 
     - name: Install cargo-edit
-      uses: actions-rs/cargo@v1
-      with:
-        command: install
-        args: cargo-edit
+      run: cargo install cargo-edit
 
     - name: Set version
-      uses: actions-rs/cargo@v1
-      with:
-        command: set-version
-        args: ${{ env.VERSION }}
+      run: cargo set-version ${{ env.VERSION }}
 
-    - name: Build target
-      uses: actions-rs/cargo@v1
-      with:
-        command: publish
-        args: -p clone-project-manager --no-verify --allow-dirty --token "${{ secrets.CARGO_TOKEN }}"
+    - name: Publish
+      run: cargo publish -p clone-project-manager --no-verify --allow-dirty --token "${{ secrets.CARGO_TOKEN }}"
 
