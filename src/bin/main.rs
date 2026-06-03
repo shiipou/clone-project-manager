@@ -35,7 +35,7 @@ struct Args {
     save: bool,
 
     /// To use a custom regex to define what's the host, the group, and the name of the repository.
-    /// [default: "^(?:https://|git@)([^/:]+)[/:]([^/]+)/([^\.]+(?:\.git)?)$"]
+    /// [default: "^(?:(?:ssh|https?)://)?(?:git@)?([^/:]+)(?::\d+)?[/:](.+)/([^/]+?)(?:\.git)?/?$"]
     #[clap(short, long)]
     regex: Option<String>,
 

@@ -8,7 +8,7 @@ use std::process::Command;
 pub mod projectmanager;
 use crate::projectmanager::{nvim, vscode};
 
-const DEFAULT_REGEX: &str = r"(?m)^(?:https?://|git@)?([^/:]+)[/:]([^/]+)/([^\.]+)(?:\.git)?/?$";
+const DEFAULT_REGEX: &str = r"^(?:(?:ssh|https?)://)?(?:git@)?([^/:]+)(?::\d+)?[/:](.+)/([^/]+?)(?:\.git)?/?$";
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(default)]
