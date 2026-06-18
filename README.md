@@ -20,10 +20,16 @@ Download the latest release of the `clone` binary from the release section and p
 Install it in one step with `curl`:
 
 ```sh
-curl -fSLo /usr/local/bin/clone https://github.com/shiipou/clone-project-manager/releases/latest/download/clone-$(uname -s)-$(uname -m)
+mkdir -p ~/.local/bin/
+curl -fSLo ~/.local/bin/clone https://github.com/shiipou/clone-project-manager/releases/latest/download/clone-$(uname -s)-$(uname -m)
+chmod +x ~/.local/bin/clone
 ```
 
-Ensure that `/usr/local/bin` is part of your system's `$PATH`.
+Ensure that `~/.local/bin` is part of your system's `$PATH`.
+
+```
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+```
 
 #### Option 2: Cargo Installation
 
