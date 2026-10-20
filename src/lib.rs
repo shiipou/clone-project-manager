@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub mod projectmanager;
-use crate::projectmanager::{nvim, vscode};
+use crate::projectmanager::{alefragnani_project_manager, nvim, wirecore_vscode_project_manager};
 
 const DEFAULT_REGEX: &str = r"^(?:(?:ssh|https?)://)?(?:git@)?([^/:]+)(?::\d+)?[/:](.+)/([^/]+?)(?:\.git)?/?$";
 
@@ -18,6 +18,7 @@ pub struct AppConfig {
     pub workspaces_dir: PathBuf,
     pub nvim_projectmanager_path: PathBuf,
     pub vscode_projectmanager_path: PathBuf,
+    pub wirecore_vscode_projectmanager_path: PathBuf,
     pub regex: String,
 }
 
@@ -64,6 +65,7 @@ impl Default for AppConfig {
                             workspaces_dir: format!("{}/workspaces", wsl_user_home_path).into(),
                             nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", wsl_user_home_path).into(),
                             vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/alefragnani.project-manager/projects.json", win_user_home_path).into(),
+                            wirecore_vscode_projectmanager_path: format!("{}/AppData/Roaming/Code/User/globalStorage/wirecore.vscode-project-manager/projects.json", win_user_home_path).into(),
                             regex: DEFAULT_REGEX.to_string()
                         }
                 } else {
@@ -78,6 +80,7 @@ impl Default for AppConfig {
                     workspaces_dir: format!("{}/workspaces", user_home_path).into(),
                     nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path).into(),
                     vscode_projectmanager_path: format!("{}/Library/Application Support/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
+                    wirecore_vscode_projectmanager_path: format!("{}/Library/Application Support/Code/User/globalStorage/wirecore.vscode-project-manager/projects.json", user_home_path).into(),
                     regex: DEFAULT_REGEX.to_string()
                 }
             }
@@ -89,6 +92,7 @@ impl Default for AppConfig {
                         workspaces_dir: format!("{}\\workspaces", user_home_path).into(),
                         nvim_projectmanager_path: format!("{}\\AppData\\Roaming\\nvim\\", user_home_path).into(),
                         vscode_projectmanager_path: format!("{}\\AppData\\Roaming\\Code\\User\\globalStorage\\alefragnani.project-manager\\projects.json", user_home_path).into(),
+                        wirecore_vscode_projectmanager_path: format!("{}\\AppData\\Roaming\\Code\\User\\globalStorage\\wirecore.vscode-project-manager\\projects.json", user_home_path).into(),
                         regex: DEFAULT_REGEX.to_string()
                     }
             }
@@ -100,6 +104,7 @@ impl Default for AppConfig {
                     workspaces_dir: format!("{}/workspaces", user_home_path).into(),
                     nvim_projectmanager_path: format!("{}/.local/share/nvim/lazy/projectmgr.nvim/projects.json", user_home_path).into(),
                     vscode_projectmanager_path:format!("{}/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json", user_home_path).into(),
+                    wirecore_vscode_projectmanager_path: format!("{}/.config/Code/User/globalStorage/wirecore.vscode-project-manager/projects.json", user_home_path).into(),
                     regex: DEFAULT_REGEX.to_string()
                 }
             }
@@ -190,12 +195,23 @@ pub fn add_project_to_nvim(
 ) {
     nvim::add_project(target_path, workspace, host, group, name, debug)
 }
-pub fn add_project_to_vscode(
+pub fn add_project_to_alefragnani_project_manager(
     target_path: PathBuf,
     workspace: PathBuf,
     group: String,
     name: String,
     debug: bool,
 ) {
-    vscode::add_project(target_path, workspace, group, name, debug)
+    alefragnani_project_manager::add_project(target_path, workspace, group, name, debug)
+}
+
+pub fn add_project_to_wirecore_vscode_project_manager(
+    target_path: PathBuf,
+    workspace: PathBuf,
+    host: String,
+    group: String,
+    name: String,
+    debug: bool,
+) {
+    wirecore_vscode_project_manager::add_project(target_path, workspace, host, group, name, debug)
 }

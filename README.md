@@ -9,6 +9,7 @@
 This tool has minimal dependencies, but to maximize its potential, we recommend the following tools for an optimized development workflow:
 
 - **VSCode** with the [Project Manager Extension](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
+- **VSCode** with [WireCore Project Manager](https://github.com/WireCore/VS-Code-Project-Manager) (projects are added at the root category)
 - **NeoVim** with the [ProjectMgr Plugin](https://github.com/charludo/projectmgr.nvim) (for NeoVim users, [NVChad](https://nvchad.com) is recommended as a configuration base)
 
 ### 🆕 Quick Installation
@@ -63,6 +64,8 @@ This will:
 
 1. Clone the repository to an organized folder structure based on the remote server and groups.
 2. Automatically add the cloned project to your **VSCode** or **NeoVim** project manager (if installed).
+
+The WireCore extension is also supported. Its `projects.json` is updated alongside the existing Project Manager file by default. Pass a config path with `--vscode <path>` to auto-detect the manager, or use `--vscode-alefragnani <path>` and `--vscode-wirecore <path>` to select one explicitly.
 
 ### Customizing Settings
 

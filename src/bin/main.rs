@@ -1,7 +1,9 @@
 use clap::Parser;
 use clone_lib::{
-    add_project_to_nvim, add_project_to_vscode, clone_repo, parse_repo_url, AppConfig,
+    add_project_to_alefragnani_project_manager, add_project_to_nvim,
+    add_project_to_wirecore_vscode_project_manager, clone_repo, parse_repo_url, AppConfig,
 };
+use serde_json::Value;
 use std::path::{Path, PathBuf};
 
 /// Automatically Clone GitHub repositories into a structured workspace. And use it in your VSCode or NVim's project manager.
@@ -22,9 +24,17 @@ struct Args {
     #[clap(long)]
     nvim: Option<PathBuf>,
 
-    /// Location of the vscode ProjectManager .json file that contain the projects's locations
+    /// Location of either VS Code project manager's projects.json; detects the manager from its path or schema
     #[clap(long)]
     vscode: Option<PathBuf>,
+
+    /// Explicit location of the Alefragnani Project Manager projects.json file
+    #[clap(long)]
+    vscode_alefragnani: Option<PathBuf>,
+
+    /// Explicit location of the WireCore VS Code Project Manager projects.json file
+    #[clap(long)]
+    vscode_wirecore: Option<PathBuf>,
 
     /// This option allow to skip the clone operation, to add the project if it already exist.
     #[clap(long, action)]
@@ -71,6 +81,8 @@ fn main() {
     let target_path = args.target;
     let nvim_path = args.nvim;
     let vscode_path = args.vscode;
+    let alefragnani_vscode_path = args.vscode_alefragnani;
+    let vscode_wirecore_path = args.vscode_wirecore;
     let skip_clone = args.skip_clone;
     let save = args.save;
     let regex_input = args.regex;
@@ -84,7 +96,20 @@ fn main() {
         config.nvim_projectmanager_path = path
     }
     if let Some(path) = vscode_path {
+        match detect_vscode_manager(&path) {
+            Ok(VscodeManager::Alefragnani) => config.vscode_projectmanager_path = path,
+            Ok(VscodeManager::WireCore) => config.wirecore_vscode_projectmanager_path = path,
+            Err(error) => {
+                eprintln!("Error: {}", error);
+                std::process::exit(2);
+            }
+        }
+    }
+    if let Some(path) = alefragnani_vscode_path {
         config.vscode_projectmanager_path = path
+    }
+    if let Some(path) = vscode_wirecore_path {
+        config.wirecore_vscode_projectmanager_path = path
     }
     let regex_str = match regex_input {
         Some(regex) => regex,
@@ -174,13 +199,107 @@ fn main() {
                     .expect("Cannot parse clone_location as a string");
             Path::new(&prefixed_path).to_path_buf()
         }
-        None => clone_location,
+        None => clone_location.clone(),
     };
-    add_project_to_vscode(
+    add_project_to_alefragnani_project_manager(
         config.vscode_projectmanager_path,
         path_with_prefix,
+        group.clone(),
+        name.clone(),
+        debug,
+    );
+
+    if debug {
+        println!(
+            "Writing to {:?}",
+            config.wirecore_vscode_projectmanager_path
+        );
+    }
+    add_project_to_wirecore_vscode_project_manager(
+        config.wirecore_vscode_projectmanager_path,
+        clone_location,
+        host,
         group,
         name,
         debug,
     );
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum VscodeManager {
+    Alefragnani,
+    WireCore,
+}
+
+fn detect_vscode_manager(path: &Path) -> Result<VscodeManager, String> {
+    let path_text = path.to_string_lossy().to_ascii_lowercase();
+    if path_text.contains("alefragnani.project-manager") {
+        return Ok(VscodeManager::Alefragnani);
+    }
+    if path_text.contains("wirecore.vscode-project-manager") {
+        return Ok(VscodeManager::WireCore);
+    }
+
+    let json_data = std::fs::read_to_string(path).map_err(|error| {
+        format!(
+            "Cannot detect the VS Code project manager from {:?}: {}. Use --vscode-wirecore for WireCore or --vscode with an extension-specific path.",
+            path, error
+        )
+    })?;
+    detect_vscode_manager_from_json(&json_data).map_err(|_| {
+        format!(
+            "Cannot detect the VS Code project manager from {:?}. Use --vscode-wirecore for WireCore or pass a projects.json with a recognizable schema.",
+            path
+        )
+    })
+}
+
+fn detect_vscode_manager_from_json(json_data: &str) -> Result<VscodeManager, ()> {
+    let entries: Vec<Value> = serde_json::from_str(json_data).map_err(|_| ())?;
+    let has_wirecore_schema = entries.iter().any(|entry| {
+        entry.get("_path").is_some()
+            || entry.get("_categoryId").is_some()
+            || entry.get("_id").is_some()
+    });
+    let has_alefragnani_schema = entries.iter().any(|entry| entry.get("rootPath").is_some());
+
+    match (has_alefragnani_schema, has_wirecore_schema) {
+        (true, false) => Ok(VscodeManager::Alefragnani),
+        (false, true) => Ok(VscodeManager::WireCore),
+        _ => Err(()),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn detects_managers_from_extension_paths() {
+        assert_eq!(
+            detect_vscode_manager(Path::new(
+                "/Code/User/globalStorage/alefragnani.project-manager/projects.json"
+            )),
+            Ok(VscodeManager::Alefragnani)
+        );
+        assert_eq!(
+            detect_vscode_manager(Path::new(
+                "/Code/User/globalStorage/wirecore.vscode-project-manager/projects.json"
+            )),
+            Ok(VscodeManager::WireCore)
+        );
+    }
+
+    #[test]
+    fn detects_managers_from_projects_json_schema() {
+        assert_eq!(
+            detect_vscode_manager_from_json(r#"[{"rootPath":"/work","name":"work"}]"#),
+            Ok(VscodeManager::Alefragnani)
+        );
+        assert_eq!(
+            detect_vscode_manager_from_json(r#"[{"_path":"/work","_categoryId":0}]"#),
+            Ok(VscodeManager::WireCore)
+        );
+        assert!(detect_vscode_manager_from_json("[]").is_err());
+    }
 }
